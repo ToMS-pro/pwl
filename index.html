@@ -128,6 +128,7 @@
     </table>
 
     <button onclick="downloadExcel()">Unduh sebagai Excel</button>
+    <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
 
     <script>
         function updateTotals() {
@@ -192,11 +193,19 @@
 
             const fileName = `${ka}_${rute}_${formattedTanggal}_${namaTas}.xlsx`;
             XLSX.writeFile(wb, fileName);
+        }
 
-            // Mengarahkan ke WhatsApp
-            const waMessage = encodeURIComponent(`File ${fileName} telah diunduh. Silakan unggah file tersebut.`);
-            const waLink = `https://api.whatsapp.com/send?text=${waMessage}`;
-            window.open(waLink, '_blank');
+        function sendToWhatsApp() {
+            const ka = document.getElementById('ka_input').value || 'KA';
+            const rute = document.getElementById('rute_input').value || 'Rute';
+            const tanggal = document.getElementById('tanggal_input').value;
+            const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
+            const namaTas = document.getElementById('nama_input').value || 'NamaTas'; // Nama tas
+
+            const message = `Data:\nKA: ${ka}\nRute: ${rute}\nTanggal: ${formattedTanggal}\nNama: ${namaTas}`;
+            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+            window.open(url, '_blank');
         }
     </script>
 
