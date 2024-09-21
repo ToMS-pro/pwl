@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contoh Tabel dengan Input Manual</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,8 +25,17 @@
             text-align: center;
         }
         th {
-            background-color: #007BFF; /* Warna biru */
+            background-color: #007BFF; /* Warna biru untuk header */
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        .naik {
+            background-color: #d4edda; /* Warna hijau untuk kolom Naik */
+        }
+        .turun {
+            background-color: #f8d7da; /* Warna merah muda untuk kolom Turun */
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
@@ -36,7 +46,7 @@
         .header {
             margin-bottom: 20px;
             padding: 10px;
-            background-color: #007BFF; /* Warna biru */
+            background-color: #007BFF; /* Warna biru untuk header di atas */
             color: white;
             border-radius: 5px;
         }
@@ -98,10 +108,10 @@
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                            <td><input type="number" id="naikKg${i}" value=""></td>
-                            <td><input type="number" id="naikKoli${i}" value=""></td>
-                            <td><input type="number" id="turunKg${i}" value=""></td>
-                            <td><input type="number" id="turunKoli${i}" value=""></td>
+                            <td class="naik"><input type="number" id="naikKg${i}" value=""></td>
+                            <td class="naik"><input type="number" id="naikKoli${i}" value=""></td>
+                            <td class="turun"><input type="number" id="turunKg${i}" value=""></td>
+                            <td class="turun"><input type="number" id="turunKoli${i}" value=""></td>
                         </tr>
                     `);
                 }
@@ -116,6 +126,9 @@
             </tr>
         </tbody>
     </table>
+
+    <button onclick="downloadExcel()">Unduh sebagai Excel</button>
+    <button onclick="showWhatsAppInstructions()">Kirim ke WhatsApp</button>
 
     <script>
         function updateTotals() {
@@ -153,6 +166,38 @@
                 document.getElementById('formatted_date').textContent = formattedDate;
             }
         });
+
+        function downloadExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws_data = [];
+            ws_data.push(["NO", "NAMA STASIUN", "NAIK Kg", "NAIK Koli", "TURUN Kg", "TURUN Koli"]);
+
+            for (let i = 1; i <= 39; i++) {
+                const stasiun = document.getElementById(`stasiun${i}`).value || "";
+                const naikKg = document.getElementById(`naikKg${i}`).value || "";
+                const naikKoli = document.getElementById(`naikKoli${i}`).value || "";
+                const turunKg = document.getElementById(`turunKg${i}`).value || "";
+                const turunKoli = document.getElementById(`turunKoli${i}`).value || "";
+
+                ws_data.push([i, stasiun, naikKg, naikKoli, turunKg, turunKoli]);
+            }
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            XLSX.utils.book_append_sheet(wb, ws, "Data");
+
+            // Mengambil nilai dari input KA, Rute, dan Tanggal untuk nama file
+            const ka = document.getElementById('ka_input').value || 'KA';
+            const rute = document.getElementById('rute_input').value || 'Rute';
+            const tanggal = document.getElementById('tanggal_input').value;
+            const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
+
+            const fileName = `${ka}_${rute}_${formattedTanggal}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        function showWhatsAppInstructions() {
+            alert("File Excel telah diunduh. Silakan buka WhatsApp, pilih grup yang diinginkan, dan unggah file yang sesuai.");
+        }
     </script>
 
 </body>
