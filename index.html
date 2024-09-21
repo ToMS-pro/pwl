@@ -79,10 +79,11 @@
 <body>
 
     <div class="header">
-        <span><strong>KA</strong> : <input type="text" id="ka_input" placeholder="Masukkan KA"></span>
-        <span><strong>Rute</strong> : <input type="text" id="rute_input" placeholder="Masukkan Rute"></span>
-        <span><strong>Tgl</strong> : <input type="date" id="tanggal_input"></span>
-        <span><strong>Format Tgl</strong> : <span id="formatted_date"></span></span>
+        <span><strong>KA</strong>: <input type="text" id="ka_input" placeholder="Masukkan KA"></span>
+        <span><strong>Rute</strong>: <input type="text" id="rute_input" placeholder="Masukkan Rute"></span>
+        <span><strong>Tgl</strong>: <input type="date" id="tanggal_input"></span>
+        <span><strong>Format Tgl</strong>: <span id="formatted_date"></span></span>
+        <span><strong>Nama</strong>: <input type="text" id="nama_input" placeholder="Masukkan Nama"></span>
     </div>
 
     <table>
@@ -101,7 +102,6 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Menambahkan baris 1 hingga 39 -->
             <script>
                 for (let i = 1; i <= 39; i++) {
                     document.write(`
@@ -185,13 +185,13 @@
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Data");
 
-            // Mengambil nilai dari input KA, Rute, dan Tanggal untuk nama file
             const ka = document.getElementById('ka_input').value || 'KA';
             const rute = document.getElementById('rute_input').value || 'Rute';
             const tanggal = document.getElementById('tanggal_input').value;
             const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
+            const namaTas = document.getElementById('nama_input').value || 'NamaTas'; // Nama tas
 
-            const fileName = `${ka}_${rute}_${formattedTanggal}.xlsx`;
+            const fileName = `${ka}_${rute}_${formattedTanggal}_${namaTas}.xlsx`;
             XLSX.writeFile(wb, fileName);
         }
 
