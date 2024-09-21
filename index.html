@@ -7,32 +7,62 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-        }
-        .table-container {
-            overflow-x: auto; /* Memungkinkan scroll horizontal */
-            margin: 0 10px; /* Memberi jarak di kiri dan kanan */
+            margin: 20px;
+            background-color: #f9f9f9;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         table, th, td {
-            border: 1px solid blue; /* Ganti warna border menjadi biru */
+            border: 1px solid #ddd;
         }
         th, td {
-            padding: 8px;
+            padding: 12px;
             text-align: center;
         }
         th {
-            background-color: #add8e6; /* Warna latar belakang header biru muda */
+            background-color: #007BFF; /* Warna biru */
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
         }
         .header {
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #007BFF; /* Warna biru */
+            color: white;
+            border-radius: 5px;
         }
         .header span {
             display: inline-block;
             margin-right: 10px;
+        }
+        input[type="text"], input[type="number"], input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box; /* Menjaga ukuran input sesuai kontainer */
+        }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus {
+            border-color: #007BFF; /* Warna border saat fokus */
+            outline: none; /* Menghilangkan outline default */
+        }
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 14px; /* Mengubah ukuran font pada perangkat kecil */
+            }
+            .header span {
+                display: block; /* Menampilkan header secara vertikal */
+                margin-bottom: 5px; /* Jarak antar elemen */
+            }
         }
     </style>
 </head>
@@ -45,49 +75,47 @@
         <span><strong>Format Tgl</strong> : <span id="formatted_date"></span></span>
     </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2">NO</th>
-                    <th rowspan="2">NAMA STASIUN</th>
-                    <th colspan="2">NAIK</th>
-                    <th colspan="2">TURUN</th>
-                </tr>
-                <tr>
-                    <th>Kg</th>
-                    <th>Koli</th>
-                    <th>Kg</th>
-                    <th>Koli</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Menggunakan loop untuk membuat 39 baris -->
-                <script>
-                    for (let i = 1; i <= 39; i++) {
-                        document.write(`
-                            <tr>
-                                <td>${i}</td>
-                                <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                                <td><input type="number" id="naikKg${i}" value=""></td>
-                                <td><input type="number" id="naikKoli${i}" value=""></td>
-                                <td><input type="number" id="turunKg${i}" value=""></td>
-                                <td><input type="number" id="turunKoli${i}" value=""></td>
-                            </tr>
-                        `);
-                    }
-                </script>
-                <tr>
-                    <td>Total</td>
-                    <td></td>
-                    <td id="totalNaikKg"></td>
-                    <td id="totalNaikKoli"></td>
-                    <td id="totalTurunKg"></td>
-                    <td id="totalTurunKoli"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">NO</th>
+                <th rowspan="2">NAMA STASIUN</th>
+                <th colspan="2">NAIK</th>
+                <th colspan="2">TURUN</th>
+            </tr>
+            <tr>
+                <th>Kg</th>
+                <th>Koli</th>
+                <th>Kg</th>
+                <th>Koli</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Menambahkan baris 1 hingga 39 -->
+            <script>
+                for (let i = 1; i <= 39; i++) {
+                    document.write(`
+                        <tr>
+                            <td>${i}</td>
+                            <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
+                            <td><input type="number" id="naikKg${i}" value=""></td>
+                            <td><input type="number" id="naikKoli${i}" value=""></td>
+                            <td><input type="number" id="turunKg${i}" value=""></td>
+                            <td><input type="number" id="turunKoli${i}" value=""></td>
+                        </tr>
+                    `);
+                }
+            </script>
+            <tr>
+                <td>Total</td>
+                <td></td>
+                <td id="totalNaikKg"></td>
+                <td id="totalNaikKoli"></td>
+                <td id="totalTurunKg"></td>
+                <td id="totalTurunKoli"></td>
+            </tr>
+        </tbody>
+    </table>
 
     <script>
         function updateTotals() {
@@ -103,18 +131,15 @@
                 totalTurunKoli += parseFloat(document.getElementById(`turunKoli${i}`).value) || 0;
             }
 
-            // Menghitung hasil akhir
-            const hasilKg = totalNaikKg - totalTurunKg; // Total Naik Kg dikurangi Total Turun Kg
-            const hasilKoli = totalNaikKoli - totalTurunKoli; // Total Naik Koli dikurangi Total Turun Koli
+            const hasilKg = totalNaikKg - totalTurunKg;
+            const hasilKoli = totalNaikKoli - totalTurunKoli;
 
-            // Menampilkan total
-            document.getElementById('totalNaikKg').textContent = hasilKg; // Hasil Kg
-            document.getElementById('totalNaikKoli').textContent = hasilKoli; // Hasil Koli
-            document.getElementById('totalTurunKg').textContent = totalTurunKg; // Total Turun Kg
-            document.getElementById('totalTurunKoli').textContent = totalTurunKoli; // Total Turun Koli
+            document.getElementById('totalNaikKg').textContent = hasilKg;
+            document.getElementById('totalNaikKoli').textContent = hasilKoli;
+            document.getElementById('totalTurunKg').textContent = totalTurunKg;
+            document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
         }
 
-        // Menambahkan event listener untuk setiap input
         const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
         inputs.forEach(input => {
             input.addEventListener('input', updateTotals);
@@ -123,9 +148,9 @@
         document.getElementById('tanggal_input').addEventListener('change', function() {
             const inputDate = this.value;
             if (inputDate) {
-                const dateParts = inputDate.split('-'); // Memisahkan tahun, bulan, tanggal
-                const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Format DD-MM-YYYY
-                document.getElementById('formatted_date').textContent = formattedDate; // Menampilkan format yang sudah diubah
+                const dateParts = inputDate.split('-');
+                const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+                document.getElementById('formatted_date').textContent = formattedDate;
             }
         });
     </script>
