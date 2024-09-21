@@ -104,7 +104,7 @@
         <tbody>
             <script>
                 for (let i = 1; i <= 39; i++) {
-                    document.write(`
+                    document.write(`\
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
@@ -128,7 +128,7 @@
     </table>
 
     <button onclick="downloadExcel()">Unduh sebagai Excel</button>
-    <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
+    <button onclick="showWhatsAppInstructions()">Kirim ke WhatsApp</button>
 
     <script>
         function updateTotals() {
@@ -182,6 +182,14 @@
                 ws_data.push([i, stasiun, naikKg, naikKoli, turunKg, turunKoli]);
             }
 
+            // Menambahkan baris total
+            const totalNaikKg = document.getElementById('totalNaikKg').textContent || 0;
+            const totalNaikKoli = document.getElementById('totalNaikKoli').textContent || 0;
+            const totalTurunKg = document.getElementById('totalTurunKg').textContent || 0;
+            const totalTurunKoli = document.getElementById('totalTurunKoli').textContent || 0;
+
+            ws_data.push(["Total", "", totalNaikKg, totalNaikKoli, totalTurunKg, totalTurunKoli]);
+
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             XLSX.utils.book_append_sheet(wb, ws, "Data");
 
@@ -195,17 +203,17 @@
             XLSX.writeFile(wb, fileName);
         }
 
-        function sendToWhatsApp() {
+        function showWhatsAppInstructions() {
             const ka = document.getElementById('ka_input').value || 'KA';
             const rute = document.getElementById('rute_input').value || 'Rute';
             const tanggal = document.getElementById('tanggal_input').value;
             const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
             const namaTas = document.getElementById('nama_input').value || 'NamaTas'; // Nama tas
 
-            const message = `Data:\nKA: ${ka}\nRute: ${rute}\nTanggal: ${formattedTanggal}\nNama: ${namaTas}`;
-            const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-            window.open(url, '_blank');
+            const message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${formattedTanggal}\nNama: ${namaTas}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
         }
     </script>
 
