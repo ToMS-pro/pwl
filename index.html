@@ -128,7 +128,6 @@
     </table>
 
     <button onclick="downloadExcel()">Unduh sebagai Excel</button>
-    <button onclick="showWhatsAppInstructions()">Kirim ke WhatsApp</button>
 
     <script>
         function updateTotals() {
@@ -193,10 +192,11 @@
 
             const fileName = `${ka}_${rute}_${formattedTanggal}_${namaTas}.xlsx`;
             XLSX.writeFile(wb, fileName);
-        }
 
-        function showWhatsAppInstructions() {
-            alert("File Excel telah diunduh. Silakan buka WhatsApp, pilih grup yang diinginkan, dan unggah file yang sesuai.");
+            // Mengarahkan ke WhatsApp
+            const waMessage = encodeURIComponent(`File ${fileName} telah diunduh. Silakan unggah file tersebut.`);
+            const waLink = `https://api.whatsapp.com/send?text=${waMessage}`;
+            window.open(waLink, '_blank');
         }
     </script>
 
