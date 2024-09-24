@@ -151,12 +151,37 @@
             document.getElementById('totalNaikKoli').textContent = hasilKoli;
             document.getElementById('totalTurunKg').textContent = totalTurunKg;
             document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
+
+            // Simpan total ke localStorage
+            localStorage.setItem('totalNaikKg', hasilKg);
+            localStorage.setItem('totalNaikKoli', hasilKoli);
+            localStorage.setItem('totalTurunKg', totalTurunKg);
+            localStorage.setItem('totalTurunKoli', totalTurunKoli);
         }
 
         const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
         inputs.forEach(input => {
-            input.addEventListener('input', updateTotals);
+            // Setiap kali input berubah, simpan nilainya ke localStorage
+            input.addEventListener('input', function() {
+                localStorage.setItem(this.id, this.value);
+                updateTotals();
+            });
         });
+
+        // Mengambil data dari localStorage saat halaman dimuat
+        window.onload = function() {
+            inputs.forEach(input => {
+                const savedValue = localStorage.getItem(input.id);
+                if (savedValue) {
+                    input.value = savedValue;
+                }
+            });
+
+            document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
+            document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
+            document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
+            document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
+        };
 
         document.getElementById('tanggal_input').addEventListener('change', function() {
             const inputDate = this.value;
@@ -164,8 +189,27 @@
                 const dateParts = inputDate.split('-');
                 const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
                 document.getElementById('formatted_date').textContent = formattedDate;
+                localStorage.setItem('tanggal_input', inputDate);
+                localStorage.setItem('formatted_date', formattedDate);
             }
         });
+
+        window.onload = function() {
+            const inputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]');
+            inputs.forEach(input => {
+                const savedValue = localStorage.getItem(input.id);
+                if (savedValue) {
+                    input.value = savedValue;
+                }
+            });
+
+            document.getElementById('formatted_date').textContent = localStorage.getItem('formatted_date') || '';
+
+            document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
+            document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
+            document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
+            document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
+        };
 
         function downloadExcel() {
             const wb = XLSX.utils.book_new();
