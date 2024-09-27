@@ -10,12 +10,13 @@
             background-color: #F5F5F5; /* Abu-abu terang */
             color: #212529; /* Hitam */
             font-family: Arial, sans-serif;
-            margin: 20px;
+            margin: 10px; /* Mengurangi margin */
+            font-size: 14px; /* Ukuran font umum */
         }
 
         div {
-            margin-bottom: 20px;
-            padding: 10px;
+            margin-bottom: 10px; /* Mengurangi margin */
+            padding: 8px; /* Mengurangi padding */
             background-color: #FFFFFF; /* Putih */
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -24,21 +25,23 @@
         input[type="text"],
         input[type="number"],
         input[type="date"] {
-            padding: 5px;
+            padding: 4px; /* Mengurangi padding */
             border: 1px solid #ccc;
             border-radius: 3px;
-            width: 200px;
-            margin: 5px;
+            width: 100%; /* Mengubah lebar menjadi 100% untuk responsif */
+            margin: 3px 0; /* Mengurangi margin */
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 15px;
+            margin-top: 15px; /* Mengurangi margin */
+            padding: 8px 12px; /* Mengurangi padding */
             background-color: #007BFF; /* Biru Laut */
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 14px; /* Ukuran font tombol */
+            width: 100%; /* Tombol juga mengisi lebar penuh */
         }
 
         button:hover {
@@ -48,13 +51,14 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px; /* Mengurangi margin */
         }
 
         th, td {
-            padding: 10px;
+            padding: 8px; /* Mengurangi padding */
             border: 1px solid #ddd;
             text-align: left;
+            font-size: 14px; /* Ukuran font tabel */
         }
 
         th {
@@ -69,6 +73,21 @@
         tr:hover {
             background-color: #f1f1f1; /* Efek hover pada baris tabel */
         }
+
+        /* Media Queries untuk tampilan mobile */
+        @media (max-width: 600px) {
+            body {
+                font-size: 12px; /* Mengurangi ukuran font untuk mobile */
+            }
+
+            button {
+                padding: 6px 10px; /* Mengurangi padding tombol untuk mobile */
+            }
+
+            th, td {
+                font-size: 12px; /* Mengurangi ukuran font tabel untuk mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -76,7 +95,7 @@
     <div>
         <span><strong>KA</strong>: <input type="text" id="ka_input" placeholder="Masukkan KA"></span>
         <span><strong>Rute</strong>: <input type="text" id="rute_input" placeholder="Masukkan Rute"></span>
-        <span><strong>Tgl</strong>: <input type="date" id="tanggal_input" onchange="updateFormattedDate()"></span>
+        <span><strong>Tgl</strong>: <input type="date" id="tanggal_input"></span>
         <span><strong>Format Tgl</strong>: <span id="formatted_date"></span></span>
         <span><strong>Nama</strong>: <input type="text" id="nama_input" placeholder="Masukkan Nama"></span>
     </div>
@@ -157,6 +176,7 @@
 
         const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
         inputs.forEach(input => {
+            // Setiap kali input berubah, simpan nilainya ke localStorage
             input.addEventListener('input', function() {
                 localStorage.setItem(this.id, this.value);
                 updateTotals();
@@ -179,48 +199,38 @@
             document.getElementById('formatted_date').textContent = localStorage.getItem('formatted_date') || '';
         };
 
-        function updateFormattedDate() {
-            const dateInput = document.getElementById('tanggal_input').value;
-            if (dateInput) {
-                const date = new Date(dateInput);
-                const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-                const formattedDate = date.toLocaleDateString('id-ID', options).replace(/\//g, '-');
-                document.getElementById('formatted_date').textContent = formattedDate;
-                localStorage.setItem('formatted_date', formattedDate);
-            }
-        }
-
         function downloadExcel() {
-            const ka = document.getElementById('ka_input').value || 'KA';
-            const rute = document.getElementById('rute_input').value || 'Rute';
-            const tgl = document.getElementById('formatted_date').textContent || 'Tanggal';
-            const nama = document.getElementById('nama_input').value || 'Nama';
-            const fileName = `${ka}_${rute}_${tgl}_${nama}.xlsx`;
+            const ka = document.getElementById("ka_input").value;
+            const rute = document.getElementById("rute_input").value;
+            const tanggal = document.getElementById("tanggal_input").value;
+            const nama = document.getElementById("nama_input").value;
+
+            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
+            const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`.replace(/[^a-zA-Z0-9_-]/g, '_'); // Mengganti karakter yang tidak valid
 
             let table = document.querySelector("table");
-            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet JS" });
+            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
             XLSX.writeFile(wb, fileName);
         }
 
         function showWhatsAppInstructions() {
-            alert("Fitur untuk mengirim ke WhatsApp akan segera tersedia.");
+            alert("Silakan kirim data melalui WhatsApp menggunakan format berikut:\n\n" +
+                "KA: " + document.getElementById("ka_input").value + "\n" +
+                "Rute: " + document.getElementById("rute_input").value + "\n" +
+                "Tanggal: " + document.getElementById("tanggal_input").value + "\n" +
+                "Nama: " + document.getElementById("nama_input").value + "\n\n" +
+                "Total Naik (Kg): " + document.getElementById('totalNaikKg').textContent + "\n" +
+                "Total Naik (Koli): " + document.getElementById('totalNaikKoli').textContent + "\n" +
+                "Total Turun (Kg): " + document.getElementById('totalTurunKg').textContent + "\n" +
+                "Total Turun (Koli): " + document.getElementById('totalTurunKoli').textContent + "\n" +
+                "\nSilakan copy dan kirimkan.");
         }
 
-        // Fungsi reset untuk menghapus localStorage dan mengosongkan input
         function resetLocalStorage() {
             localStorage.clear();
-            const inputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]');
-            inputs.forEach(input => {
-                input.value = '';
-            });
-            document.getElementById('totalNaikKg').textContent = 0;
-            document.getElementById('totalNaikKoli').textContent = 0;
-            document.getElementById('totalTurunKg').textContent = 0;
-            document.getElementById('totalTurunKoli').textContent = 0;
-            document.getElementById('formatted_date').textContent = '';
-            alert("Data telah direset!");
+            location.reload(); // Reload halaman setelah reset
         }
     </script>
-
 </body>
 </html>
