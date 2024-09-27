@@ -66,11 +66,10 @@
             outline: none; /* Menghilangkan outline default */
         }
 
-        /* CSS untuk layar besar */
-        @media (min-width: 600px) {
-            th, td {
-                font-size: 16px;
-            }
+        /* Lebarkan kolom Kg dan Koli */
+        th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6),
+        td:nth-child(3), td:nth-child(4), td:nth-child(5), td:nth-child(6) {
+            width: 250px; /* Ubah ukuran lebar sesuai kebutuhan */
         }
 
         /* Penyesuaian untuk perangkat dengan ukuran layar kecil */
@@ -81,13 +80,6 @@
             td input {
                 font-size: 10px; /* Ukuran input lebih kecil untuk layar kecil */
                 padding: 6px; /* Kurangi padding agar input lebih pas */
-            }
-            th[colspan="2"] {
-                font-size: 10px; /* Sesuaikan ukuran font untuk header "Kg" dan "Koli" */
-            }
-            .header span {
-                display: block; /* Menampilkan header secara vertikal */
-                margin-bottom: 5px; /* Jarak antar elemen */
             }
         }
     </style>
@@ -213,22 +205,16 @@
 
         // Fungsi reset untuk menghapus localStorage dan mengosongkan input
         function resetLocalStorage() {
-            // Hapus semua data dari localStorage
             localStorage.clear();
-            
-            // Kosongkan semua input
             const inputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]');
             inputs.forEach(input => {
                 input.value = '';
             });
-            
-            // Kosongkan total yang ditampilkan
             document.getElementById('totalNaikKg').textContent = 0;
             document.getElementById('totalNaikKoli').textContent = 0;
             document.getElementById('totalTurunKg').textContent = 0;
             document.getElementById('totalTurunKoli').textContent = 0;
             document.getElementById('formatted_date').textContent = '';
-
             alert("Data telah direset!");
         }
     </script>
