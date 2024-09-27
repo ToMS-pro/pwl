@@ -198,19 +198,20 @@
         };
 
         function downloadExcel() {
-            const ka = document.getElementById("ka_input").value;
-            const rute = document.getElementById("rute_input").value;
-            const tanggal = document.getElementById("tanggal_input").value;
-            const nama = document.getElementById("nama_input").value;
+    const ka = document.getElementById("ka_input").value;
+    const rute = document.getElementById("rute_input").value;
+    const tanggal = document.getElementById("tanggal_input").value;
+    const nama = document.getElementById("nama_input").value;
 
-            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
-            const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`.replace(/[^a-zA-Z0-9_-]/g, '_'); // Mengganti karakter yang tidak valid
+    const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
+    const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`; // Pastikan ekstensi .xlsx
 
-            let table = document.querySelector("table");
-            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    let table = document.querySelector("table");
+    let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
 
-            XLSX.writeFile(wb, fileName);
-        }
+    XLSX.writeFile(wb, fileName); // Simpan file dengan ekstensi .xlsx
+}
+
 
         function sendToWhatsApp() {
             const ka = document.getElementById("ka_input").value;
