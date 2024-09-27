@@ -5,82 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contoh Tabel dengan Input Manual</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f9f9f9;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background-color: #007BFF; /* Warna biru untuk header */
-            color: white;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-        .naik {
-            background-color: #d4edda; /* Warna hijau untuk kolom Naik */
-        }
-        .turun {
-            background-color: #f8d7da; /* Warna merah muda untuk kolom Turun */
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #ddd;
-        }
-        .header {
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #007BFF; /* Warna biru untuk header di atas */
-            color: white;
-            border-radius: 5px;
-        }
-        .header span {
-            display: inline-block;
-            margin-right: 10px;
-        }
-        input[type="text"], input[type="number"], input[type="date"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box; /* Menjaga ukuran input sesuai kontainer */
-        }
-        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus {
-            border-color: #007BFF; /* Warna border saat fokus */
-            outline: none; /* Menghilangkan outline default */
-        }
-
-        /* Penyesuaian untuk perangkat dengan ukuran layar kecil */
-        @media (max-width: 600px) {
-            table, th, td {
-                font-size: 12px; /* Ukuran font yang lebih kecil untuk perangkat kecil */
-            }
-            td input {
-                font-size: 10px; /* Ukuran input lebih kecil untuk layar kecil */
-                padding: 6px; /* Kurangi padding agar input lebih pas */
-            }
-        }
-    </style>
 </head>
 <body>
 
-    <div class="header">
+    <div>
         <span><strong>KA</strong>: <input type="text" id="ka_input" placeholder="Masukkan KA"></span>
         <span><strong>Rute</strong>: <input type="text" id="rute_input" placeholder="Masukkan Rute"></span>
         <span><strong>Tgl</strong>: <input type="date" id="tanggal_input"></span>
@@ -110,10 +38,10 @@
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                            <td class="naik"><input type="number" id="naikKg${i}" value=""></td>
-                            <td class="naik"><input type="number" id="naikKoli${i}" value=""></td>
-                            <td class="turun"><input type="number" id="turunKg${i}" value=""></td>
-                            <td class="turun"><input type="number" id="turunKoli${i}" value=""></td>
+                            <td><input type="number" id="naikKg${i}" value=""></td>
+                            <td><input type="number" id="naikKoli${i}" value=""></td>
+                            <td><input type="number" id="turunKg${i}" value=""></td>
+                            <td><input type="number" id="turunKoli${i}" value=""></td>
                         </tr>
                     `);
                 }
