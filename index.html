@@ -20,9 +20,6 @@
             background-color: #FFFFFF; /* Putih */
             border: 1px solid #ddd;
             border-radius: 5px;
-            display: flex; /* Menggunakan flexbox */
-            flex-wrap: wrap; /* Memungkinkan elemen dibungkus */
-            gap: 10px; /* Menambahkan jarak antar elemen */
         }
 
         input[type="text"],
@@ -31,12 +28,12 @@
             padding: 4px; /* Mengurangi padding */
             border: 1px solid #ccc;
             border-radius: 3px;
-            flex: 1; /* Elemen input mengisi ruang yang tersedia */
-            min-width: 150px; /* Lebar minimum untuk input */
+            width: 100%; /* Mengubah lebar menjadi 100% untuk responsif */
             margin: 3px 0; /* Mengurangi margin */
         }
 
         button {
+            margin-top: 15px; /* Mengurangi margin */
             padding: 8px 12px; /* Mengurangi padding */
             background-color: #007BFF; /* Biru Laut */
             color: white;
@@ -45,7 +42,6 @@
             cursor: pointer;
             font-size: 14px; /* Ukuran font tombol */
             width: 100%; /* Tombol juga mengisi lebar penuh */
-            margin-top: 10px; /* Mengatur jarak atas tombol */
         }
 
         button:hover {
@@ -90,11 +86,6 @@
 
             th, td {
                 font-size: 12px; /* Mengurangi ukuran font tabel untuk mobile */
-            }
-
-            div {
-                flex-direction: column; /* Menyusun elemen dalam kolom untuk mobile */
-                align-items: stretch; /* Mengatur elemen mengisi lebar */
             }
         }
     </style>
@@ -214,7 +205,9 @@
             const tanggal = document.getElementById("tanggal_input").value;
             const nama = document.getElementById("nama_input").value;
 
-            const fileName = `${ka}_${rute}_${tanggal}_${nama}.xlsx`.replace(/\s+/g, '_'); // Mengganti spasi dengan underscore
+            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
+            const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`.replace(/[^a-zA-Z0-9_-]/g, '_'); // Mengganti karakter yang tidak valid
+
             let table = document.querySelector("table");
             let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
 
@@ -239,6 +232,5 @@
             location.reload(); // Reload halaman setelah reset
         }
     </script>
-
 </body>
 </html>
