@@ -7,17 +7,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         body {
-            background-color: #F5F5F5; /* Abu-abu terang */
-            color: #212529; /* Hitam */
+            background-color: #F5F5F5;
+            color: #212529;
             font-family: Arial, sans-serif;
-            margin: 10px; /* Mengurangi margin */
-            font-size: 14px; /* Ukuran font umum */
+            margin: 10px;
+            font-size: 14px;
         }
 
         div {
-            margin-bottom: 10px; /* Mengurangi margin */
-            padding: 8px; /* Mengurangi padding */
-            background-color: #FFFFFF; /* Putih */
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #FFFFFF;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
@@ -25,67 +25,66 @@
         input[type="text"],
         input[type="number"],
         input[type="date"] {
-            padding: 4px; /* Mengurangi padding */
+            padding: 4px;
             border: 1px solid #ccc;
             border-radius: 3px;
-            width: 100%; /* Mengubah lebar menjadi 100% untuk responsif */
-            margin: 3px 0; /* Mengurangi margin */
+            width: 100%;
+            margin: 3px 0;
         }
 
         button {
-            margin-top: 15px; /* Mengurangi margin */
-            padding: 8px 12px; /* Mengurangi padding */
-            background-color: #007BFF; /* Biru Laut */
+            margin-top: 15px;
+            padding: 8px 12px;
+            background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 14px; /* Ukuran font tombol */
-            width: 100%; /* Tombol juga mengisi lebar penuh */
+            font-size: 14px;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #0056B3; /* Biru Tua */
+            background-color: #0056B3;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px; /* Mengurangi margin */
+            margin-top: 15px;
         }
 
         th, td {
-            padding: 8px; /* Mengurangi padding */
+            padding: 8px;
             border: 1px solid #ddd;
             text-align: left;
-            font-size: 14px; /* Ukuran font tabel */
+            font-size: 14px;
         }
 
         th {
-            background-color: #007BFF; /* Biru Laut */
+            background-color: #007BFF;
             color: white;
         }
 
         td {
-            background-color: #FFFFFF; /* Putih */
+            background-color: #FFFFFF;
         }
 
         tr:hover {
-            background-color: #f1f1f1; /* Efek hover pada baris tabel */
+            background-color: #f1f1f1;
         }
 
-        /* Media Queries untuk tampilan mobile */
         @media (max-width: 600px) {
             body {
-                font-size: 12px; /* Mengurangi ukuran font untuk mobile */
+                font-size: 12px;
             }
 
             button {
-                padding: 6px 10px; /* Mengurangi padding tombol untuk mobile */
+                padding: 6px 10px;
             }
 
             th, td {
-                font-size: 12px; /* Mengurangi ukuran font tabel untuk mobile */
+                font-size: 12px;
             }
         }
     </style>
@@ -142,7 +141,7 @@
     </table>
 
     <button onclick="downloadExcel()">Unduh sebagai Excel</button>
-    <button onclick="showWhatsAppInstructions()">Kirim ke WhatsApp</button>
+    <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
     <button onclick="resetLocalStorage()">Reset Data</button>
 
     <script>
@@ -214,17 +213,22 @@
             XLSX.writeFile(wb, fileName);
         }
 
-        function showWhatsAppInstructions() {
-            alert("Silakan kirim data melalui WhatsApp menggunakan format berikut:\n\n" +
-                "KA: " + document.getElementById("ka_input").value + "\n" +
-                "Rute: " + document.getElementById("rute_input").value + "\n" +
-                "Tanggal: " + document.getElementById("tanggal_input").value + "\n" +
-                "Nama: " + document.getElementById("nama_input").value + "\n\n" +
-                "Total Naik (Kg): " + document.getElementById('totalNaikKg').textContent + "\n" +
-                "Total Naik (Koli): " + document.getElementById('totalNaikKoli').textContent + "\n" +
-                "Total Turun (Kg): " + document.getElementById('totalTurunKg').textContent + "\n" +
-                "Total Turun (Koli): " + document.getElementById('totalTurunKoli').textContent + "\n" +
-                "\nSilakan copy dan kirimkan.");
+        function sendToWhatsApp() {
+            const ka = document.getElementById("ka_input").value;
+            const rute = document.getElementById("rute_input").value;
+            const tanggal = document.getElementById("tanggal_input").value;
+            const nama = document.getElementById("nama_input").value;
+
+            const totalNaikKg = document.getElementById('totalNaikKg').textContent;
+            const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
+            const totalTurunKg = document.getElementById('totalTurunKg').textContent;
+            const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
+
+            const message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\nTotal Naik (Kg): ${totalNaikKg}\nTotal Naik (Koli): ${totalNaikKoli}\nTotal Turun (Kg): ${totalTurunKg}\nTotal Turun (Koli): ${totalTurunKoli}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
         }
 
         function resetLocalStorage() {
