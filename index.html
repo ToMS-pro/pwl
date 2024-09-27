@@ -65,9 +65,25 @@
             border-color: #007BFF; /* Warna border saat fokus */
             outline: none; /* Menghilangkan outline default */
         }
+
+        /* CSS untuk layar besar */
+        @media (min-width: 600px) {
+            th, td {
+                font-size: 16px;
+            }
+        }
+
+        /* Penyesuaian untuk perangkat dengan ukuran layar kecil */
         @media (max-width: 600px) {
             table, th, td {
-                font-size: 14px; /* Mengubah ukuran font pada perangkat kecil */
+                font-size: 12px; /* Ukuran font yang lebih kecil untuk perangkat kecil */
+            }
+            td input {
+                font-size: 10px; /* Ukuran input lebih kecil untuk layar kecil */
+                padding: 6px; /* Kurangi padding agar input lebih pas */
+            }
+            th[colspan="2"] {
+                font-size: 10px; /* Sesuaikan ukuran font untuk header "Kg" dan "Koli" */
             }
             .header span {
                 display: block; /* Menampilkan header secara vertikal */
@@ -129,6 +145,7 @@
 
     <button onclick="downloadExcel()">Unduh sebagai Excel</button>
     <button onclick="showWhatsAppInstructions()">Kirim ke WhatsApp</button>
+    <button onclick="resetLocalStorage()">Reset Data</button> <!-- Tombol reset data -->
 
     <script>
         function updateTotals() {
@@ -181,83 +198,38 @@
             document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
             document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
             document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
-        };
-
-        document.getElementById('tanggal_input').addEventListener('change', function() {
-            const inputDate = this.value;
-            if (inputDate) {
-                const dateParts = inputDate.split('-');
-                const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-                document.getElementById('formatted_date').textContent = formattedDate;
-                localStorage.setItem('tanggal_input', inputDate);
-                localStorage.setItem('formatted_date', formattedDate);
-            }
-        });
-
-        window.onload = function() {
-            const inputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]');
-            inputs.forEach(input => {
-                const savedValue = localStorage.getItem(input.id);
-                if (savedValue) {
-                    input.value = savedValue;
-                }
-            });
-
             document.getElementById('formatted_date').textContent = localStorage.getItem('formatted_date') || '';
-
-            document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
-            document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
-            document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
-            document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
         };
 
         function downloadExcel() {
-            const wb = XLSX.utils.book_new();
-            const ws_data = [];
-            ws_data.push(["NO", "NAMA STASIUN", "NAIK Kg", "NAIK Koli", "TURUN Kg", "TURUN Koli"]);
-
-            for (let i = 1; i <= 39; i++) {
-                const stasiun = document.getElementById(`stasiun${i}`).value || "";
-                const naikKg = document.getElementById(`naikKg${i}`).value || "";
-                const naikKoli = document.getElementById(`naikKoli${i}`).value || "";
-                const turunKg = document.getElementById(`turunKg${i}`).value || "";
-                const turunKoli = document.getElementById(`turunKoli${i}`).value || "";
-
-                ws_data.push([i, stasiun, naikKg, naikKoli, turunKg, turunKoli]);
-            }
-
-            // Menambahkan baris total
-            const totalNaikKg = document.getElementById('totalNaikKg').textContent || 0;
-            const totalNaikKoli = document.getElementById('totalNaikKoli').textContent || 0;
-            const totalTurunKg = document.getElementById('totalTurunKg').textContent || 0;
-            const totalTurunKoli = document.getElementById('totalTurunKoli').textContent || 0;
-
-            ws_data.push(["Total", "", totalNaikKg, totalNaikKoli, totalTurunKg, totalTurunKoli]);
-
-            const ws = XLSX.utils.aoa_to_sheet(ws_data);
-            XLSX.utils.book_append_sheet(wb, ws, "Data");
-
-            const ka = document.getElementById('ka_input').value || 'KA';
-            const rute = document.getElementById('rute_input').value || 'Rute';
-            const tanggal = document.getElementById('tanggal_input').value;
-            const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
-            const namaTas = document.getElementById('nama_input').value || 'NamaTas'; // Nama tas
-
-            const fileName = `${ka}_${rute}_${formattedTanggal}_${namaTas}.xlsx`;
-            XLSX.writeFile(wb, fileName);
+            let table = document.querySelector("table");
+            let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet JS"});
+            XLSX.writeFile(wb, "Data.xlsx");
         }
 
         function showWhatsAppInstructions() {
-            const ka = document.getElementById('ka_input').value || 'KA';
-            const rute = document.getElementById('rute_input').value || 'Rute';
-            const tanggal = document.getElementById('tanggal_input').value;
-            const formattedTanggal = tanggal ? tanggal.split('-').reverse().join('-') : 'Tanggal'; // Format tanggal
-            const namaTas = document.getElementById('nama_input').value || 'NamaTas'; // Nama tas
+            alert("Fitur untuk mengirim ke WhatsApp akan segera tersedia.");
+        }
 
-            const message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${formattedTanggal}\nNama: ${namaTas}`;
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
+        // Fungsi reset untuk menghapus localStorage dan mengosongkan input
+        function resetLocalStorage() {
+            // Hapus semua data dari localStorage
+            localStorage.clear();
+            
+            // Kosongkan semua input
+            const inputs = document.querySelectorAll('input[type="number"], input[type="text"], input[type="date"]');
+            inputs.forEach(input => {
+                input.value = '';
+            });
+            
+            // Kosongkan total yang ditampilkan
+            document.getElementById('totalNaikKg').textContent = 0;
+            document.getElementById('totalNaikKoli').textContent = 0;
+            document.getElementById('totalTurunKg').textContent = 0;
+            document.getElementById('totalTurunKoli').textContent = 0;
+            document.getElementById('formatted_date').textContent = '';
+
+            alert("Data telah direset!");
         }
     </script>
 
