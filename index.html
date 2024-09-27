@@ -5,6 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contoh Tabel dengan Input Manual</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        div {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        span {
+            margin-right: 15px;
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* Gaya untuk placeholder */
+        input::placeholder {
+            color: blue; /* Mengubah warna placeholder menjadi biru */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2; /* Warna latar belakang header */
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #4CAF50; /* Warna latar belakang tombol */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049; /* Warna saat hover */
+        }
+    </style>
 </head>
 <body>
 
@@ -38,10 +99,10 @@
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                            <td style="background-color: #d4edda;"><input type="number" id="naikKg${i}" value=""></td>
-                            <td style="background-color: #d4edda;"><input type="number" id="naikKoli${i}" value=""></td>
-                            <td style="background-color: #f8d7da;"><input type="number" id="turunKg${i}" value=""></td>
-                            <td style="background-color: #f8d7da;"><input type="number" id="turunKoli${i}" value=""></td>
+                            <td><input type="number" id="naikKg${i}" value=""></td>
+                            <td><input type="number" id="naikKoli${i}" value=""></td>
+                            <td><input type="number" id="turunKg${i}" value=""></td>
+                            <td><input type="number" id="turunKoli${i}" value=""></td>
                         </tr>
                     `);
                 }
