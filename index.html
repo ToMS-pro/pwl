@@ -194,7 +194,6 @@
             document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
             document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
             document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
-            document.getElementById('formatted_date').textContent = localStorage.getItem('formatted_date') || '';
         };
 
         function downloadExcel() {
@@ -220,15 +219,27 @@
 
             let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
 
+            let hasData = false; // Variabel untuk mengecek apakah ada inputan yang diisi
+
             // Loop melalui setiap baris tabel (30 baris sesuai script di atas)
             for (let i = 1; i <= 30; i++) {
-                const stasiun = document.getElementById(`stasiun${i}`).value || 'Tidak ada input';
+                const stasiun = document.getElementById(`stasiun${i}`).value || '';
                 const naikKg = document.getElementById(`naikKg${i}`).value || 0;
                 const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
                 const turunKg = document.getElementById(`turunKg${i}`).value || 0;
                 const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
-                message += `Stasiun ${i}: ${stasiun}, Naik - ${naikKg} Kg, ${naikKoli} Koli, Turun - ${turunKg} Kg, ${turunKoli} Koli\n`;
+                // Hanya tambahkan ke pesan jika ada input untuk stasiun atau naik/turun
+                if (stasiun || naikKg > 0 || naikKoli > 0 || turunKg > 0 || turunKoli > 0) {
+                    message += `Stasiun ${i}: ${stasiun}, Naik - ${naikKg} Kg, ${naikKoli} Koli, Turun - ${turunKg} Kg, ${turunKoli} Koli\n`;
+                    hasData = true; // Menandakan bahwa ada inputan
+                }
+            }
+
+            // Jika tidak ada data yang diinputkan, tidak kirim pesan
+            if (!hasData) {
+                alert('Tidak ada data yang diinput untuk dikirim.');
+                return;
             }
 
             const totalNaikKg = document.getElementById('totalNaikKg').textContent;
@@ -236,6 +247,7 @@
             const totalTurunKg = document.getElementById('totalTurunKg').textContent;
             const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
+            // Tambahkan total jika ada data yang dikirim
             message += `\nTotal Naik: ${totalNaikKg} Kg, ${totalNaikKoli} Koli\nTotal Turun: ${totalTurunKg} Kg, ${totalTurunKoli} Koli`;
 
             const encodedMessage = encodeURIComponent(message);
@@ -245,11 +257,12 @@
         }
 
         function resetLocalStorage() {
-            if (confirm('Apakah Anda yakin ingin mereset semua data?')) {
+            if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
                 localStorage.clear();
                 location.reload();
             }
         }
     </script>
+
 </body>
 </html>
