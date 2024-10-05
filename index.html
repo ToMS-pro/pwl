@@ -198,20 +198,19 @@
         };
 
         function downloadExcel() {
-    const ka = document.getElementById("ka_input").value;
-    const rute = document.getElementById("rute_input").value;
-    const tanggal = document.getElementById("tanggal_input").value;
-    const nama = document.getElementById("nama_input").value;
+            const ka = document.getElementById("ka_input").value;
+            const rute = document.getElementById("rute_input").value;
+            const tanggal = document.getElementById("tanggal_input").value;
+            const nama = document.getElementById("nama_input").value;
 
-    const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
-    const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`; // Pastikan ekstensi .xlsx
+            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
+            const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`; // Pastikan ekstensi .xlsx
 
-    let table = document.querySelector("table");
-    let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+            let table = document.querySelector("table");
+            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
 
-    XLSX.writeFile(wb, fileName); // Simpan file dengan ekstensi .xlsx
-}
-
+            XLSX.writeFile(wb, fileName); // Simpan file dengan ekstensi .xlsx
+        }
 
         function sendToWhatsApp() {
             const ka = document.getElementById("ka_input").value;
@@ -219,21 +218,37 @@
             const tanggal = document.getElementById("tanggal_input").value;
             const nama = document.getElementById("nama_input").value;
 
+            let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
+
+            // Loop melalui setiap baris tabel (30 baris sesuai script di atas)
+            for (let i = 1; i <= 30; i++) {
+                const stasiun = document.getElementById(`stasiun${i}`).value || 'Tidak ada input';
+                const naikKg = document.getElementById(`naikKg${i}`).value || 0;
+                const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+                const turunKg = document.getElementById(`turunKg${i}`).value || 0;
+                const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
+
+                message += `Stasiun ${i}: ${stasiun}, Naik - ${naikKg} Kg, ${naikKoli} Koli, Turun - ${turunKg} Kg, ${turunKoli} Koli\n`;
+            }
+
             const totalNaikKg = document.getElementById('totalNaikKg').textContent;
             const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
             const totalTurunKg = document.getElementById('totalTurunKg').textContent;
             const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
-            const message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\nTotal Naik (Kg): ${totalNaikKg}\nTotal Naik (Koli): ${totalNaikKoli}\nTotal Turun (Kg): ${totalTurunKg}\nTotal Turun (Koli): ${totalTurunKoli}`;
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
+            message += `\nTotal Naik: ${totalNaikKg} Kg, ${totalNaikKoli} Koli\nTotal Turun: ${totalTurunKg} Kg, ${totalTurunKoli} Koli`;
 
-            window.open(whatsappUrl, '_blank');
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
+
+            window.open(whatsappURL, '_blank');
         }
 
         function resetLocalStorage() {
-            localStorage.clear();
-            location.reload(); // Reload halaman setelah reset
+            if (confirm('Apakah Anda yakin ingin mereset semua data?')) {
+                localStorage.clear();
+                location.reload();
+            }
         }
     </script>
 </body>
