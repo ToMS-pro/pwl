@@ -120,10 +120,10 @@
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                            <td><input type="number" id="naikKg${i}" value=""></td>
-                            <td><input type="number" id="naikKoli${i}" value=""></td>
-                            <td><input type="number" id="turunKg${i}" value=""></td>
-                            <td><input type="number" id="turunKoli${i}" value=""></td>
+                            <td><input type="number" id="naikKg${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="naikKoli${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="turunKg${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="turunKoli${i}" value="" oninput="updateTotals()"></td>
                         </tr>
                     `);
                 }
@@ -143,126 +143,147 @@
     <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
     <button onclick="resetLocalStorage()">Reset Data</button>
 
-    <script>
-        function updateTotals() {
-            let totalNaikKg = 0;
-            let totalNaikKoli = 0;
-            let totalTurunKg = 0;
-            let totalTurunKoli = 0;
+<script>
+    function updateTotals() {
+        let totalNaikKg = 0;
+        let totalNaikKoli = 0;
+        let totalTurunKg = 0;
+        let totalTurunKoli = 0;
 
-            for (let i = 1; i <= 30; i++) {
-                totalNaikKg += parseFloat(document.getElementById(`naikKg${i}`).value) || 0;
-                totalNaikKoli += parseFloat(document.getElementById(`naikKoli${i}`).value) || 0;
-                totalTurunKg += parseFloat(document.getElementById(`turunKg${i}`).value) || 0;
-                totalTurunKoli += parseFloat(document.getElementById(`turunKoli${i}`).value) || 0;
-            }
-
-            const hasilKg = totalNaikKg - totalTurunKg;
-            const hasilKoli = totalNaikKoli - totalTurunKoli;
-
-            document.getElementById('totalNaikKg').textContent = hasilKg;
-            document.getElementById('totalNaikKoli').textContent = hasilKoli;
-            document.getElementById('totalTurunKg').textContent = totalTurunKg;
-            document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
-
-            // Simpan total ke localStorage
-            localStorage.setItem('totalNaikKg', hasilKg);
-            localStorage.setItem('totalNaikKoli', hasilKoli);
-            localStorage.setItem('totalTurunKg', totalTurunKg);
-            localStorage.setItem('totalTurunKoli', totalTurunKoli);
+        for (let i = 1; i <= 30; i++) {
+            totalNaikKg += parseFloat(document.getElementById(`naikKg${i}`).value) || 0;
+            totalNaikKoli += parseFloat(document.getElementById(`naikKoli${i}`).value) || 0;
+            totalTurunKg += parseFloat(document.getElementById(`turunKg${i}`).value) || 0;
+            totalTurunKoli += parseFloat(document.getElementById(`turunKoli${i}`).value) || 0;
         }
 
-        const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+        document.getElementById('totalNaikKg').textContent = totalNaikKg;
+        document.getElementById('totalNaikKoli').textContent = totalNaikKoli;
+        document.getElementById('totalTurunKg').textContent = totalTurunKg;
+        document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
+
+        // Simpan total ke localStorage
+        localStorage.setItem('totalNaikKg', totalNaikKg);
+        localStorage.setItem('totalNaikKoli', totalNaikKoli);
+        localStorage.setItem('totalTurunKg', totalTurunKg);
+        localStorage.setItem('totalTurunKoli', totalTurunKoli);
+    }
+
+    const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+    inputs.forEach(input => {
+        // Setiap kali input berubah, simpan nilainya ke localStorage
+        input.addEventListener('input', function() {
+            localStorage.setItem(this.id, this.value);
+            updateTotals();
+        });
+    });
+
+    // Mengambil data dari localStorage saat halaman dimuat
+    window.onload = function() {
         inputs.forEach(input => {
-            // Setiap kali input berubah, simpan nilainya ke localStorage
-            input.addEventListener('input', function() {
-                localStorage.setItem(this.id, this.value);
-                updateTotals();
-            });
+            const savedValue = localStorage.getItem(input.id);
+            if (savedValue) {
+                input.value = savedValue;
+            }
         });
 
-        // Mengambil data dari localStorage saat halaman dimuat
-        window.onload = function() {
-            inputs.forEach(input => {
-                const savedValue = localStorage.getItem(input.id);
-                if (savedValue) {
-                    input.value = savedValue;
-                }
-            });
+        document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
+        document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
+        document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
+        document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
+    };
 
-            document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
-            document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
-            document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
-            document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
-        };
+    function downloadExcel() {
+        const ka = document.getElementById("ka_input").value;
+        const rute = document.getElementById("rute_input").value;
+        const tanggal = document.getElementById("tanggal_input").value;
+        const nama = document.getElementById("nama_input").value;
 
-        function downloadExcel() {
-            const ka = document.getElementById("ka_input").value;
-            const rute = document.getElementById("rute_input").value;
-            const tanggal = document.getElementById("tanggal_input").value;
-            const nama = document.getElementById("nama_input").value;
+        const totalNaikKg = document.getElementById('totalNaikKg').textContent;
+        const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
+        const totalTurunKg = document.getElementById('totalTurunKg').textContent;
+        const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
-            const formattedDate = new Date(tanggal).toLocaleDateString('id-ID'); // Format tanggal
-            const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`; // Pastikan ekstensi .xlsx
+        const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+        const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`;
 
-            let table = document.querySelector("table");
-            let wb = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+        let wb = XLSX.utils.book_new();
+        let ws_data = [
+            ["KA", ka],
+            ["Rute", rute],
+            ["Tanggal", formattedDate],
+            ["Nama", nama],
+            [], // Baris kosong
+            ["Stasiun", "Naik (Kg)", "Naik (Koli)", "Turun (Kg)", "Turun (Koli)"]
+        ];
 
-            XLSX.writeFile(wb, fileName); // Simpan file dengan ekstensi .xlsx
-        }
+        // Loop data tabel untuk memasukkan ke dalam Excel
+        for (let i = 1; i <= 30; i++) {
+            const stasiun = document.getElementById(`stasiun${i}`).value || '';
+            const naikKg = document.getElementById(`naikKg${i}`).value || 0;
+            const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+            const turunKg = document.getElementById(`turunKg${i}`).value || 0;
+            const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
-        function sendToWhatsApp() {
-            const ka = document.getElementById("ka_input").value;
-            const rute = document.getElementById("rute_input").value;
-            const tanggal = document.getElementById("tanggal_input").value;
-            const nama = document.getElementById("nama_input").value;
-
-            let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
-
-            let hasData = false; // Variabel untuk mengecek apakah ada inputan yang diisi
-
-            // Loop melalui setiap baris tabel (30 baris sesuai script di atas)
-            for (let i = 1; i <= 30; i++) {
-                const stasiun = document.getElementById(`stasiun${i}`).value || '';
-                const naikKg = document.getElementById(`naikKg${i}`).value || 0;
-                const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
-                const turunKg = document.getElementById(`turunKg${i}`).value || 0;
-                const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
-
-                // Hanya tambahkan ke pesan jika ada input untuk stasiun atau naik/turun
-                if (stasiun || naikKg > 0 || naikKoli > 0 || turunKg > 0 || turunKoli > 0) {
-                    message += `Stasiun ${i}: ${stasiun}, Naik - ${naikKg} Kg, ${naikKoli} Koli, Turun - ${turunKg} Kg, ${turunKoli} Koli\n`;
-                    hasData = true; // Menandakan bahwa ada inputan
-                }
-            }
-
-            // Jika tidak ada data yang diinputkan, tidak kirim pesan
-            if (!hasData) {
-                alert('Tidak ada data yang diinput untuk dikirim.');
-                return;
-            }
-
-            const totalNaikKg = document.getElementById('totalNaikKg').textContent;
-            const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
-            const totalTurunKg = document.getElementById('totalTurunKg').textContent;
-            const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
-
-            // Tambahkan total jika ada data yang dikirim
-            message += `\nTotal Naik: ${totalNaikKg} Kg, ${totalNaikKoli} Koli\nTotal Turun: ${totalTurunKg} Kg, ${totalTurunKoli} Koli`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/?text=${encodedMessage}`;
-
-            window.open(whatsappURL, '_blank');
-        }
-
-        function resetLocalStorage() {
-            if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
-                localStorage.clear();
-                location.reload();
+            if (stasiun) {
+                ws_data.push([stasiun, naikKg, naikKoli, turunKg, turunKoli]);
             }
         }
-    </script>
 
+        // Menambahkan total ke worksheet dengan keterangan Kg dan Koli
+        ws_data.push([]);
+        ws_data.push(["Total Naik", `${totalNaikKg} Kg`, `${totalNaikKoli} Koli`]);
+        ws_data.push(["Total Turun", `${totalTurunKg} Kg`, `${totalTurunKoli} Koli`]);
+
+        let ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, fileName);
+    }
+
+    function sendToWhatsApp() {
+        const ka = document.getElementById("ka_input").value;
+        const rute = document.getElementById("rute_input").value;
+        const tanggal = document.getElementById("tanggal_input").value;
+        const nama = document.getElementById("nama_input").value;
+        const totalNaikKg = document.getElementById('totalNaikKg').textContent;
+        const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
+        const totalTurunKg = document.getElementById('totalTurunKg').textContent;
+        const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
+
+        // Validasi untuk input kosong
+        if (!ka || !rute || !tanggal || !nama) {
+            alert("Pastikan semua input terisi sebelum mengirim ke WhatsApp.");
+            return;
+        }
+
+        const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+        let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${formattedDate}\nNama: ${nama}\n\nData Stasiun:\n`;
+
+        // Mengumpulkan data dari tabel
+        for (let i = 1; i <= 30; i++) {
+            const stasiun = document.getElementById(`stasiun${i}`).value || '';
+            const naikKg = document.getElementById(`naikKg${i}`).value || 0;
+            const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+            const turunKg = document.getElementById(`turunKg${i}`).value || 0;
+            const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
+
+            // Cek apakah nama stasiun diisi
+            if (stasiun) {
+                message += `Stasiun: ${stasiun}, Naik: ${naikKg} Kg (${naikKoli} Koli), Turun: ${turunKg} Kg (${turunKoli} Koli)\n`;
+            }
+        }
+
+        // Menambahkan total ke pesan
+        message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\nTotal Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)`;
+
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    function resetLocalStorage() {
+        localStorage.clear();
+        location.reload(); // Reload halaman setelah reset
+    }
+</script>
 </body>
 </html>
