@@ -143,7 +143,7 @@
     <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
     <button onclick="resetLocalStorage()">Reset Data</button>
 
-<script>
+ <script>
     function updateTotals() {
         let totalNaikKg = 0;
         let totalNaikKoli = 0;
@@ -157,14 +157,17 @@
             totalTurunKoli += parseFloat(document.getElementById(`turunKoli${i}`).value) || 0;
         }
 
-        document.getElementById('totalNaikKg').textContent = totalNaikKg;
-        document.getElementById('totalNaikKoli').textContent = totalNaikKoli;
+        const hasilKg = totalNaikKg - totalTurunKg;
+        const hasilKoli = totalNaikKoli - totalTurunKoli;
+
+        document.getElementById('totalNaikKg').textContent = hasilKg;
+        document.getElementById('totalNaikKoli').textContent = hasilKoli;
         document.getElementById('totalTurunKg').textContent = totalTurunKg;
         document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
 
         // Simpan total ke localStorage
-        localStorage.setItem('totalNaikKg', totalNaikKg);
-        localStorage.setItem('totalNaikKoli', totalNaikKoli);
+        localStorage.setItem('totalNaikKg', hasilKg);
+        localStorage.setItem('totalNaikKoli', hasilKoli);
         localStorage.setItem('totalTurunKg', totalTurunKg);
         localStorage.setItem('totalTurunKoli', totalTurunKoli);
     }
@@ -205,7 +208,7 @@
         const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
         const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
-        const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xlsx`;
+        const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xls`; // Mengubah ekstensi ke .xls
 
         let wb = XLSX.utils.book_new();
         let ws_data = [
@@ -237,7 +240,7 @@
 
         let ws = XLSX.utils.aoa_to_sheet(ws_data);
         XLSX.utils.book_append_sheet(wb, ws, "Data");
-        XLSX.writeFile(wb, fileName);
+        XLSX.writeFile(wb, fileName, { bookType: 'xls' }); // Menyimpan sebagai .xls
     }
 
     function sendToWhatsApp() {
@@ -245,21 +248,14 @@
         const rute = document.getElementById("rute_input").value;
         const tanggal = document.getElementById("tanggal_input").value;
         const nama = document.getElementById("nama_input").value;
+
         const totalNaikKg = document.getElementById('totalNaikKg').textContent;
         const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
         const totalTurunKg = document.getElementById('totalTurunKg').textContent;
         const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
-        // Validasi untuk input kosong
-        if (!ka || !rute || !tanggal || !nama) {
-            alert("Pastikan semua input terisi sebelum mengirim ke WhatsApp.");
-            return;
-        }
+        let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
 
-        const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
-        let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${formattedDate}\nNama: ${nama}\n\nData Stasiun:\n`;
-
-        // Mengumpulkan data dari tabel
         for (let i = 1; i <= 30; i++) {
             const stasiun = document.getElementById(`stasiun${i}`).value || '';
             const naikKg = document.getElementById(`naikKg${i}`).value || 0;
@@ -267,22 +263,21 @@
             const turunKg = document.getElementById(`turunKg${i}`).value || 0;
             const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
-            // Cek apakah nama stasiun diisi
             if (stasiun) {
                 message += `Stasiun: ${stasiun}, Naik: ${naikKg} Kg (${naikKoli} Koli), Turun: ${turunKg} Kg (${turunKoli} Koli)\n`;
             }
         }
 
-        // Menambahkan total ke pesan
-        message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\nTotal Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)`;
+        message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\n`;
+        message += `Total Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)\n`;
 
-        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
     }
 
     function resetLocalStorage() {
         localStorage.clear();
-        location.reload(); // Reload halaman setelah reset
+        location.reload();
     }
 </script>
 </body>
