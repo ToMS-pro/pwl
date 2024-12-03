@@ -197,51 +197,59 @@
     };
 
     function downloadExcel() {
-        const ka = document.getElementById("ka_input").value;
-        const rute = document.getElementById("rute_input").value;
-        const tanggal = document.getElementById("tanggal_input").value;
-        const nama = document.getElementById("nama_input").value;
+    const ka = document.getElementById("ka_input").value || "KA";
+    const rute = document.getElementById("rute_input").value || "Rute";
+    const tanggal = document.getElementById("tanggal_input").value || new Date().toISOString().split('T')[0];
+    const nama = document.getElementById("nama_input").value || "Operator";
 
-        const totalNaikKg = document.getElementById('totalNaikKg').textContent;
-        const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
-        const totalTurunKg = document.getElementById('totalTurunKg').textContent;
-        const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
+    const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+    const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xls`;
 
-        const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
-        const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xls`; // Mengubah ekstensi ke .xls
+    let wb = XLSX.utils.book_new();
+    let ws_data = [
+        ["KA", ka],
+        ["Rute", rute],
+        ["Tanggal", formattedDate],
+        ["Nama", nama],
+        [], // Baris kosong
+        ["NO", "NAMA STASIUN", "NAIK (Kg)", "NAIK (Koli)", "TURUN (Kg)", "TURUN (Koli)"]
+    ];
 
-        let wb = XLSX.utils.book_new();
-        let ws_data = [
-            ["KA", ka],
-            ["Rute", rute],
-            ["Tanggal", formattedDate],
-            ["Nama", nama],
-            [], // Baris kosong
-            ["Stasiun", "Naik (Kg)", "Naik (Koli)", "Turun (Kg)", "Turun (Koli)"]
-        ];
+    // Loop data tabel
+    for (let i = 1; i <= 30; i++) {
+        const stasiun = document.getElementById(`stasiun${i}`).value || '';
+        const naikKg = document.getElementById(`naikKg${i}`).value || 0;
+        const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+        const turunKg = document.getElementById(`turunKg${i}`).value || 0;
+        const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
-        // Loop data tabel untuk memasukkan ke dalam Excel
-        for (let i = 1; i <= 30; i++) {
-            const stasiun = document.getElementById(`stasiun${i}`).value || '';
-            const naikKg = document.getElementById(`naikKg${i}`).value || 0;
-            const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
-            const turunKg = document.getElementById(`turunKg${i}`).value || 0;
-            const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
-
-            if (stasiun) {
-                ws_data.push([stasiun, naikKg, naikKoli, turunKg, turunKoli]);
-            }
+        if (stasiun) {
+            ws_data.push([i, stasiun, parseFloat(naikKg), parseFloat(naikKoli), parseFloat(turunKg), parseFloat(turunKoli)]);
         }
-
-        // Menambahkan total ke worksheet dengan keterangan Kg dan Koli
-        ws_data.push([]);
-        ws_data.push(["Total Naik", `${totalNaikKg} Kg`, `${totalNaikKoli} Koli`]);
-        ws_data.push(["Total Turun", `${totalTurunKg} Kg`, `${totalTurunKoli} Koli`]);
-
-        let ws = XLSX.utils.aoa_to_sheet(ws_data);
-        XLSX.utils.book_append_sheet(wb, ws, "Data");
-        XLSX.writeFile(wb, fileName, { bookType: 'xls' }); // Menyimpan sebagai .xls
     }
+
+    // Tambahkan total ke baris terakhir tabel
+    ws_data.push([]);
+    ws_data.push(["TOTAL", "", 
+        parseFloat(document.getElementById('totalNaikKg').textContent) || 0, 
+        parseFloat(document.getElementById('totalNaikKoli').textContent) || 0, 
+        parseFloat(document.getElementById('totalTurunKg').textContent) || 0, 
+        parseFloat(document.getElementById('totalTurunKoli').textContent) || 0
+    ]);
+
+    // Convert ke worksheet dan unduh file
+    let ws = XLSX.utils.aoa_to_sheet(ws_data);
+    ws['!cols'] = [
+        { wch: 5 },  // Kolom NO
+        { wch: 20 }, // Kolom NAMA STASIUN
+        { wch: 10 }, // Kolom NAIK Kg
+        { wch: 10 }, // Kolom NAIK Koli
+        { wch: 10 }, // Kolom TURUN Kg
+        { wch: 10 }  // Kolom TURUN Koli
+    ];
+    XLSX.utils.book_append_sheet(wb, ws, "Data Perjalanan");
+    XLSX.writeFile(wb, fileName, { bookType: 'xls' });
+}
 
     function sendToWhatsApp() {
         const ka = document.getElementById("ka_input").value;
