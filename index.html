@@ -252,36 +252,36 @@
 }
 
     function sendToWhatsApp() {
-        const ka = document.getElementById("ka_input").value;
-        const rute = document.getElementById("rute_input").value;
-        const tanggal = document.getElementById("tanggal_input").value;
-        const nama = document.getElementById("nama_input").value;
+    const ka = document.getElementById("ka_input").value;
+    const rute = document.getElementById("rute_input").value;
+    const tanggal = document.getElementById("tanggal_input").value;
+    const nama = document.getElementById("nama_input").value;
 
-        const totalNaikKg = document.getElementById('totalNaikKg').textContent;
-        const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
-        const totalTurunKg = document.getElementById('totalTurunKg').textContent;
-        const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
+    const totalNaikKg = document.getElementById('totalNaikKg').textContent;
+    const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
+    const totalTurunKg = document.getElementById('totalTurunKg').textContent;
+    const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
-        let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
+    let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
 
-        for (let i = 1; i <= 30; i++) {
-            const stasiun = document.getElementById(`stasiun${i}`).value || '';
-            const naikKg = document.getElementById(`naikKg${i}`).value || 0;
-            const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
-            const turunKg = document.getElementById(`turunKg${i}`).value || 0;
-            const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
+    for (let i = 1; i <= 30; i++) {
+        const stasiun = document.getElementById(`stasiun${i}`).value || '';
+        const naikKg = document.getElementById(`naikKg${i}`).value || 0;
+        const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+        const turunKg = document.getElementById(`turunKg${i}`).value || 0;
+        const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
-            if (stasiun) {
-                message += `Stasiun: ${stasiun}, Naik: ${naikKg} Kg (${naikKoli} Koli), Turun: ${turunKg} Kg (${turunKoli} Koli)\n`;
-            }
+        if (stasiun) {
+            message += `${i}. Stasiun: ${stasiun}, Naik: ${naikKg} Kg (${naikKoli} Koli), Turun: ${turunKg} Kg (${turunKoli} Koli)\n`;
         }
-
-        message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\n`;
-        message += `Total Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)\n`;
-
-        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
     }
+
+    message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\n`;
+    message += `Total Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)\n`;
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
 
     function resetLocalStorage() {
         localStorage.clear();
