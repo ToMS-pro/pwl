@@ -3,195 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Data Stasiun KA</title>
+  <title>Form Naik Turun</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <style>
-    body { background-color: #F5F5F5; font-family: Arial; padding: 10px; font-size: 14px; }
-    div { margin-bottom: 10px; padding: 8px; background: #fff; border: 1px solid #ddd; border-radius: 5px; }
-    input[type="text"], input[type="number"], input[type="date"] {
-      width: 100%; padding: 4px; margin: 3px 0; border: 1px solid #ccc; border-radius: 3px;
-    }
-    button {
-      margin-top: 10px; padding: 8px 12px; background: #007BFF; color: white;
-      border: none; border-radius: 5px; cursor: pointer; font-size: 14px; width: 100%;
-    }
-    button:hover { background-color: #0056B3; }
+    body { font-family: Arial; margin: 10px; font-size: 14px; background: #f5f5f5; }
+    div, table { background: white; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; }
+    input { margin: 4px 0; padding: 4px; border: 1px solid #ccc; border-radius: 3px; width: 100%; }
+    button { margin-top: 10px; width: 100%; padding: 8px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td {
-      padding: 8px; border: 1px solid #ddd; text-align: left; font-size: 14px;
-    }
-    th { background-color: #007BFF; color: white; }
-    td { background-color: #FFFFFF; }
-    tr:hover { background-color: #f1f1f1; }
+    th, td { padding: 6px; border: 1px solid #ddd; text-align: left; }
+    th { background: #007bff; color: white; }
+    tr:hover { background: #f1f1f1; }
   </style>
 </head>
 <body>
 
-  <div>
-    <strong>KA</strong>: <input type="text" id="ka_input" placeholder="Masukkan KA" />
-    <strong>Rute</strong>: <input type="text" id="rute_input" placeholder="Masukkan Rute" />
-    <strong>Tanggal</strong>: <input type="date" id="tanggal_input" />
-    <strong>Nama</strong>: <input type="text" id="nama_input" placeholder="Masukkan Nama" />
-  </div>
+<div>
+  <label>KA: <input type="text" id="ka_input" placeholder="Masukkan KA"></label>
+  <label>Rute: <input type="text" id="rute_input" placeholder="Masukkan Rute"></label>
+  <label>Tanggal: <input type="date" id="tanggal_input"></label>
+  <label>Nama: <input type="text" id="nama_input" placeholder="Masukkan Nama"></label>
+</div>
 
-  <table>
-    <thead>
-      <tr>
-        <th rowspan="2">NO</th>
-        <th rowspan="2">NAMA STASIUN</th>
-        <th colspan="2">NAIK</th>
-        <th colspan="2">TURUN</th>
-      </tr>
-      <tr>
-        <th>koli</th>
-        <th>kg</th>
-        <th>koli</th>
-        <th>kg</th>
-      </tr>
-    </thead>
-    <tbody id="dataBody"></tbody>
-    <tfoot>
-      <tr>
-        <td>Total</td>
-        <td></td>
-        <td id="totalNaikkoli">0</td>
-        <td id="totalNaikKg">0</td>
-        <td id="totalTurunkoli">0</td>
-        <td id="totalTurunKg">0</td>
-      </tr>
-    </tfoot>
-  </table>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">NO</th>
+      <th rowspan="2">NAMA STASIUN</th>
+      <th colspan="2">NAIK</th>
+      <th colspan="2">TURUN</th>
+    </tr>
+    <tr>
+      <th>koli</th>
+      <th>kg</th>
+      <th>koli</th>
+      <th>kg</th>
+    </tr>
+  </thead>
+  <tbody id="data-body"></tbody>
+</table>
 
-  <button onclick="downloadExcel()">Unduh sebagai Excel</button>
-  <button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
-  <button onclick="resetLocalStorage()">Reset Data</button>
+<button onclick="downloadExcel()">Unduh sebagai Excel</button>
+<button onclick="sendToWhatsApp()">Kirim ke WhatsApp</button>
+<button onclick="resetLocalStorage()">Reset Data</button>
 
-  <script>
-    // Buat tabel 30 baris
-    const tbody = document.getElementById("dataBody");
-    for (let i = 1; i <= 30; i++) {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${i}</td>
-        <td><input type="text" id="stasiun${i}"/></td>
-        <td><input type="number" id="naikkoli${i}" oninput="updateTotals()"/></td>
-        <td><input type="number" id="naikkg${i}" oninput="updateTotals()"/></td>
-        <td><input type="number" id="turunkoli${i}" oninput="updateTotals()"/></td>
-        <td><input type="number" id="turunkg${i}" oninput="updateTotals()"/></td>
-      `;
-      tbody.appendChild(row);
-    }
+<script>
+  const tbody = document.getElementById('data-body');
 
-    function updateTotals() {
-      let totalNaikkoli = 0, totalNaikKg = 0, totalTurunkoli = 0, totalTurunKg = 0;
-      for (let i = 1; i <= 30; i++) {
-        totalNaikkoli += parseFloat(document.getElementById(`naikkoli${i}`).value) || 0;
-        totalNaikKg += parseFloat(document.getElementById(`naikkg${i}`).value) || 0;
-        totalTurunkoli += parseFloat(document.getElementById(`turunkoli${i}`).value) || 0;
-        totalTurunKg += parseFloat(document.getElementById(`turunkg${i}`).value) || 0;
-      }
-      document.getElementById('totalNaikkoli').textContent = totalNaikkoli;
-      document.getElementById('totalNaikKg').textContent = totalNaikKg;
-      document.getElementById('totalTurunkoli').textContent = totalTurunkoli;
-      document.getElementById('totalTurunKg').textContent = totalTurunKg;
+  for (let i = 1; i <= 30; i++) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${i}</td>
+      <td><input type="text" id="stasiun${i}"></td>
+      <td><input type="number" id="naikkoli${i}" oninput="updateTotals()"></td>
+      <td><input type="number" id="naikkg${i}" oninput="updateTotals()"></td>
+      <td><input type="number" id="turunkoli${i}" oninput="updateTotals()"></td>
+      <td><input type="number" id="turunkg${i}" oninput="updateTotals()"></td>
+    `;
+    tbody.appendChild(row);
+  }
 
-      // simpan ke localStorage
-      ['ka_input','rute_input','tanggal_input','nama_input'].forEach(id => {
-        localStorage.setItem(id, document.getElementById(id).value);
-      });
-      for (let i = 1; i <= 30; i++) {
-        ['stasiun','naikkoli','naikkg','turunkoli','turunkg'].forEach(prefix => {
-          const input = document.getElementById(`${prefix}${i}`);
-          localStorage.setItem(input.id, input.value);
-        });
-      }
-    }
+  tbody.innerHTML += `
+    <tr>
+      <td><strong>Total</strong></td>
+      <td></td>
+      <td id="totalNaikKoli"></td>
+      <td id="totalNaikKg"></td>
+      <td id="totalTurunKoli"></td>
+      <td id="totalTurunKg"></td>
+    </tr>
+    <tr>
+      <td><strong>Sisa</strong></td>
+      <td></td>
+      <td id="sisaKoli"></td>
+      <td id="sisaKg"></td>
+      <td></td>
+      <td></td>
+    </tr>
+  `;
 
-    window.onload = function () {
-      // load dari localStorage
-      ['ka_input','rute_input','tanggal_input','nama_input'].forEach(id => {
-        if (localStorage.getItem(id)) document.getElementById(id).value = localStorage.getItem(id);
-      });
-      for (let i = 1; i <= 30; i++) {
-        ['stasiun','naikkoli','naikkg','turunkoli','turunkg'].forEach(prefix => {
-          const input = document.getElementById(`${prefix}${i}`);
-          const val = localStorage.getItem(input.id);
-          if (val) input.value = val;
-        });
-      }
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      localStorage.setItem(this.id, this.value);
       updateTotals();
-    };
+    });
+  });
 
-    function downloadExcel() {
-      const ka = document.getElementById("ka_input").value || "KA";
-      const rute = document.getElementById("rute_input").value || "Rute";
-      const tanggal = document.getElementById("tanggal_input").value || new Date().toISOString().split('T')[0];
-      const nama = document.getElementById("nama_input").value || "Operator";
-      const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+  function updateTotals() {
+    let totalNaikKoli = 0, totalNaikKg = 0, totalTurunKoli = 0, totalTurunKg = 0;
 
-      const data = [
-        ["KA", ka],
-        ["Rute", rute],
-        ["Tanggal", formattedDate],
-        ["Nama", nama],
-        [],
-        ["NO", "NAMA STASIUN", "NAIK (koli)", "NAIK (kg)", "TURUN (koli)", "TURUN (kg)"]
-      ];
+    for (let i = 1; i <= 30; i++) {
+      totalNaikKoli += parseFloat(document.getElementById(`naikkoli${i}`).value) || 0;
+      totalNaikKg += parseFloat(document.getElementById(`naikkg${i}`).value) || 0;
+      totalTurunKoli += parseFloat(document.getElementById(`turunkoli${i}`).value) || 0;
+      totalTurunKg += parseFloat(document.getElementById(`turunkg${i}`).value) || 0;
+    }
 
-      for (let i = 1; i <= 30; i++) {
-        const stasiun = document.getElementById(`stasiun${i}`).value;
-        if (stasiun) {
-          data.push([
-            i,
-            stasiun,
-            +document.getElementById(`naikkoli${i}`).value || 0,
-            +document.getElementById(`naikkg${i}`).value || 0,
-            +document.getElementById(`turunkoli${i}`).value || 0,
-            +document.getElementById(`turunkg${i}`).value || 0
-          ]);
-        }
+    const sisaKoli = totalNaikKoli - totalTurunKoli;
+    const sisaKg = totalNaikKg - totalTurunKg;
+
+    document.getElementById('totalNaikKoli').textContent = totalNaikKoli;
+    document.getElementById('totalNaikKg').textContent = totalNaikKg;
+    document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
+    document.getElementById('totalTurunKg').textContent = totalTurunKg;
+    document.getElementById('sisaKoli').textContent = sisaKoli;
+    document.getElementById('sisaKg').textContent = sisaKg;
+
+    localStorage.setItem('totalNaikKoli', totalNaikKoli);
+    localStorage.setItem('totalNaikKg', totalNaikKg);
+    localStorage.setItem('totalTurunKoli', totalTurunKoli);
+    localStorage.setItem('totalTurunKg', totalTurunKg);
+    localStorage.setItem('sisaKoli', sisaKoli);
+    localStorage.setItem('sisaKg', sisaKg);
+  }
+
+  window.onload = () => {
+    inputs.forEach(input => {
+      const saved = localStorage.getItem(input.id);
+      if (saved) input.value = saved;
+    });
+    document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
+    document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
+    document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
+    document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
+    document.getElementById('sisaKoli').textContent = localStorage.getItem('sisaKoli') || 0;
+    document.getElementById('sisaKg').textContent = localStorage.getItem('sisaKg') || 0;
+  };
+
+  function downloadExcel() {
+    const ka = document.getElementById("ka_input").value || "KA";
+    const rute = document.getElementById("rute_input").value || "Rute";
+    const tanggal = document.getElementById("tanggal_input").value || new Date().toISOString().split('T')[0];
+    const nama = document.getElementById("nama_input").value || "Operator";
+    const formattedDate = new Date(tanggal).toLocaleDateString('id-ID');
+    const fileName = `${ka}_${rute}_${formattedDate}_${nama}.xls`;
+
+    let ws_data = [
+      ["KA", ka], ["Rute", rute], ["Tanggal", formattedDate], ["Nama", nama], [],
+      ["NO", "NAMA STASIUN", "NAIK (koli)", "NAIK (kg)", "TURUN (koli)", "TURUN (kg)"]
+    ];
+
+    for (let i = 1; i <= 30; i++) {
+      const stasiun = document.getElementById(`stasiun${i}`).value || '';
+      const nk = parseFloat(document.getElementById(`naikkoli${i}`).value) || 0;
+      const nkg = parseFloat(document.getElementById(`naikkg${i}`).value) || 0;
+      const tk = parseFloat(document.getElementById(`turunkoli${i}`).value) || 0;
+      const tkg = parseFloat(document.getElementById(`turunkg${i}`).value) || 0;
+      if (stasiun) ws_data.push([i, stasiun, nk, nkg, tk, tkg]);
+    }
+
+    ws_data.push([]);
+    ws_data.push(["TOTAL", "", 
+      parseFloat(document.getElementById('totalNaikKoli').textContent) || 0,
+      parseFloat(document.getElementById('totalNaikKg').textContent) || 0,
+      parseFloat(document.getElementById('totalTurunKoli').textContent) || 0,
+      parseFloat(document.getElementById('totalTurunKg').textContent) || 0
+    ]);
+    ws_data.push(["SISA", "", 
+      parseFloat(document.getElementById('sisaKoli').textContent) || 0,
+      parseFloat(document.getElementById('sisaKg').textContent) || 0
+    ]);
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    XLSX.utils.book_append_sheet(wb, ws, "Data");
+    XLSX.writeFile(wb, fileName, { bookType: 'xls' });
+  }
+
+  function sendToWhatsApp() {
+    const ka = document.getElementById("ka_input").value;
+    const rute = document.getElementById("rute_input").value;
+    const tanggal = document.getElementById("tanggal_input").value;
+    const nama = document.getElementById("nama_input").value;
+
+    let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\n`;
+
+    for (let i = 1; i <= 30; i++) {
+      const st = document.getElementById(`stasiun${i}`).value;
+      const nk = document.getElementById(`naikkoli${i}`).value;
+      const nkg = document.getElementById(`naikkg${i}`).value;
+      const tk = document.getElementById(`turunkoli${i}`).value;
+      const tkg = document.getElementById(`turunkg${i}`).value;
+      if (st) {
+        message += `${i}. ${st} | Naik: ${nk} koli, ${nkg} kg | Turun: ${tk} koli, ${tkg} kg\n`;
       }
-
-      data.push([]);
-      data.push([
-        "TOTAL", "",
-        +document.getElementById('totalNaikkoli').textContent,
-        +document.getElementById('totalNaikKg').textContent,
-        +document.getElementById('totalTurunkoli').textContent,
-        +document.getElementById('totalTurunKg').textContent
-      ]);
-
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Data KA");
-      XLSX.writeFile(wb, `${ka}_${rute}_${formattedDate}_${nama}.xls`);
     }
 
-    function sendToWhatsApp() {
-      const ka = document.getElementById("ka_input").value;
-      const rute = document.getElementById("rute_input").value;
-      const tanggal = document.getElementById("tanggal_input").value;
-      const nama = document.getElementById("nama_input").value;
+    message += `\nTotal Naik: ${document.getElementById('totalNaikKoli').textContent} koli, ${document.getElementById('totalNaikKg').textContent} kg`;
+    message += `\nTotal Turun: ${document.getElementById('totalTurunKoli').textContent} koli, ${document.getElementById('totalTurunKg').textContent} kg`;
+    message += `\nSisa: ${document.getElementById('sisaKoli').textContent} koli, ${document.getElementById('sisaKg').textContent} kg`;
 
-      let pesan = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData:\n`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+  }
 
-      for (let i = 1; i <= 30; i++) {
-        const stasiun = document.getElementById(`stasiun${i}`).value;
-        if (stasiun) {
-          pesan += `${i}. ${stasiun}, Naik: ${document.getElementById(`naikkoli${i}`).value || 0} koli / ${document.getElementById(`naikkg${i}`).value || 0} kg, Turun: ${document.getElementById(`turunkoli${i}`).value || 0} koli / ${document.getElementById(`turunkg${i}`).value || 0} kg\n`;
-        }
-      }
-
-      pesan += `\nTotal Naik: ${document.getElementById('totalNaikkoli').textContent} koli / ${document.getElementById('totalNaikKg').textContent} kg`;
-      pesan += `\nTotal Turun: ${document.getElementById('totalTurunkoli').textContent} koli / ${document.getElementById('totalTurunKg').textContent} kg`;
-
-      window.open(`https://wa.me/?text=${encodeURIComponent(pesan)}`, '_blank');
-    }
-
-    function resetLocalStorage() {
-      localStorage.clear();
-      location.reload();
-    }
-  </script>
+  function resetLocalStorage() {
+    localStorage.clear();
+    location.reload();
+  }
+</script>
 </body>
 </html>
