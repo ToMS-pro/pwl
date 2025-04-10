@@ -120,10 +120,10 @@
                         <tr>
                             <td>${i}</td>
                             <td><input type="text" id="stasiun${i}" placeholder="Masukkan Nama Stasiun"></td>
-                            <td><input type="number" id="naikKg${i}" value="" oninput="updateTotals()"></td>
-                            <td><input type="number" id="naikKoli${i}" value="" oninput="updateTotals()"></td>
-                            <td><input type="number" id="turunKg${i}" value="" oninput="updateTotals()"></td>
-                            <td><input type="number" id="turunKoli${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="naikkoli${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="naikkg${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="turunkoli${i}" value="" oninput="updateTotals()"></td>
+                            <td><input type="number" id="turunkg${i}" value="" oninput="updateTotals()"></td>
                         </tr>
                     `);
                 }
@@ -131,10 +131,10 @@
             <tr>
                 <td>Total</td>
                 <td></td>
+                <td id="totalNaikkoli"></td>
                 <td id="totalNaikKg"></td>
-                <td id="totalNaikKoli"></td>
+                <td id="totalTurunkoli"></td>
                 <td id="totalTurunKg"></td>
-                <td id="totalTurunKoli"></td>
             </tr>
         </tbody>
     </table>
@@ -145,31 +145,31 @@
 
  <script>
     function updateTotals() {
-        let totalNaikKg = 0;
         let totalNaikKoli = 0;
+        let totalNaikKg = 0;
+        let totalTurunkoli = 0;
         let totalTurunKg = 0;
-        let totalTurunKoli = 0;
 
         for (let i = 1; i <= 30; i++) {
+            totalNaikkoli += parseFloat(document.getElementById(`naikkoli${i}`).value) || 0;
             totalNaikKg += parseFloat(document.getElementById(`naikKg${i}`).value) || 0;
-            totalNaikKoli += parseFloat(document.getElementById(`naikKoli${i}`).value) || 0;
+            totalTurunkoli += parseFloat(document.getElementById(`turunkoli${i}`).value) || 0;
             totalTurunKg += parseFloat(document.getElementById(`turunKg${i}`).value) || 0;
-            totalTurunKoli += parseFloat(document.getElementById(`turunKoli${i}`).value) || 0;
         }
 
+        const hasilkoli = totalNaikkoli - totalTurunkoli;
         const hasilKg = totalNaikKg - totalTurunKg;
-        const hasilKoli = totalNaikKoli - totalTurunKoli;
 
+        document.getElementById('totalNaikkoli').textContent = hasilkoli;
         document.getElementById('totalNaikKg').textContent = hasilKg;
-        document.getElementById('totalNaikKoli').textContent = hasilKoli;
+        document.getElementById('totalTurunkoli').textContent = totalTurunkoli;
         document.getElementById('totalTurunKg').textContent = totalTurunKg;
-        document.getElementById('totalTurunKoli').textContent = totalTurunKoli;
 
         // Simpan total ke localStorage
+        localStorage.setItem('totalNaikkoli', hasilkoli);
         localStorage.setItem('totalNaikKg', hasilKg);
-        localStorage.setItem('totalNaikKoli', hasilKoli);
+        localStorage.setItem('totalTurunkoli', totalTurunkoli);
         localStorage.setItem('totalTurunKg', totalTurunKg);
-        localStorage.setItem('totalTurunKoli', totalTurunKoli);
     }
 
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
@@ -190,10 +190,10 @@
             }
         });
 
+        document.getElementById('totalNaikkoli').textContent = localStorage.getItem('totalNaikkoli') || 0;
         document.getElementById('totalNaikKg').textContent = localStorage.getItem('totalNaikKg') || 0;
-        document.getElementById('totalNaikKoli').textContent = localStorage.getItem('totalNaikKoli') || 0;
-        document.getElementById('totalTurunKg').textContent = localStorage.getItem('totalTurunKg') || 0;
-        document.getElementById('totalTurunKoli').textContent = localStorage.getItem('totalTurunKoli') || 0;
+        document.getElementById('totalTurunkoli').textContent = localStorage.getItem('totalTurunkoli') || 0;
+        document.getElementById('totalTurunKkg').textContent = localStorage.getItem('totalTurunKg') || 0;
     };
 
     function downloadExcel() {
@@ -212,29 +212,29 @@
         ["Tanggal", formattedDate],
         ["Nama", nama],
         [], // Baris kosong
-        ["NO", "NAMA STASIUN", "NAIK (Kg)", "NAIK (Koli)", "TURUN (Kg)", "TURUN (Koli)"]
+        ["NO", "NAMA STASIUN", "NAIK (koli)", "NAIK (Kg)", "TURUN (koli)", "TURUN (Kg)"]
     ];
 
     // Loop data tabel
     for (let i = 1; i <= 30; i++) {
         const stasiun = document.getElementById(`stasiun${i}`).value || '';
+        const naikkoli = document.getElementById(`naikkoli${i}`).value || 0;
         const naikKg = document.getElementById(`naikKg${i}`).value || 0;
-        const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
+        const turunkoli = document.getElementById(`turunkoli${i}`).value || 0;
         const turunKg = document.getElementById(`turunKg${i}`).value || 0;
-        const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
 
         if (stasiun) {
-            ws_data.push([i, stasiun, parseFloat(naikKg), parseFloat(naikKoli), parseFloat(turunKg), parseFloat(turunKoli)]);
+            ws_data.push([i, stasiun, parseFloat(naikkoli), parseFloat(naikKg), parseFloat(turunkoli), parseFloat(turunKg)]);
         }
     }
 
     // Tambahkan total ke baris terakhir tabel
     ws_data.push([]);
     ws_data.push(["TOTAL", "", 
+        parseFloat(document.getElementById('totalNaikkoli').textContent) || 0, 
         parseFloat(document.getElementById('totalNaikKg').textContent) || 0, 
-        parseFloat(document.getElementById('totalNaikKoli').textContent) || 0, 
-        parseFloat(document.getElementById('totalTurunKg').textContent) || 0, 
-        parseFloat(document.getElementById('totalTurunKoli').textContent) || 0
+        parseFloat(document.getElementById('totalTurunkoli').textContent) || 0, 
+        parseFloat(document.getElementById('totalTurunKg').textContent) || 0
     ]);
 
     // Convert ke worksheet dan unduh file
@@ -242,10 +242,10 @@
     ws['!cols'] = [
         { wch: 5 },  // Kolom NO
         { wch: 20 }, // Kolom NAMA STASIUN
+        { wch: 10 }, // Kolom NAIK koli
         { wch: 10 }, // Kolom NAIK Kg
-        { wch: 10 }, // Kolom NAIK Koli
-        { wch: 10 }, // Kolom TURUN Kg
-        { wch: 10 }  // Kolom TURUN Koli
+        { wch: 10 }, // Kolom TURUN koli
+        { wch: 10 }  // Kolom TURUN Kg
     ];
     XLSX.utils.book_append_sheet(wb, ws, "Data Perjalanan");
     XLSX.writeFile(wb, fileName, { bookType: 'xls' });
@@ -257,27 +257,27 @@
     const tanggal = document.getElementById("tanggal_input").value;
     const nama = document.getElementById("nama_input").value;
 
+    const totalNaikkoli = document.getElementById('totalNaik').textContent;
     const totalNaikKg = document.getElementById('totalNaikKg').textContent;
-    const totalNaikKoli = document.getElementById('totalNaikKoli').textContent;
+    const totalTurunkoli = document.getElementById('totalTurunkoli').textContent;
     const totalTurunKg = document.getElementById('totalTurunKg').textContent;
-    const totalTurunKoli = document.getElementById('totalTurunKoli').textContent;
 
     let message = `KA: ${ka}\nRute: ${rute}\nTanggal: ${tanggal}\nNama: ${nama}\n\nData Stasiun:\n`;
 
     for (let i = 1; i <= 30; i++) {
         const stasiun = document.getElementById(`stasiun${i}`).value || '';
+        const naikkoli = document.getElementById(`naikkoli${i}`).value || 0;
         const naikKg = document.getElementById(`naikKg${i}`).value || 0;
-        const naikKoli = document.getElementById(`naikKoli${i}`).value || 0;
-        const turunKg = document.getElementById(`turunKg${i}`).value || 0;
-        const turunKoli = document.getElementById(`turunKoli${i}`).value || 0;
+        const turunkoli = document.getElementById(`turunkoli${i}`).value || 0;
+        const turunKg = document.getElementById(`turunKkg${i}`).value || 0;
 
         if (stasiun) {
             message += `${i}. Stasiun: ${stasiun}, Naik: ${naikKg} Kg (${naikKoli} Koli), Turun: ${turunKg} Kg (${turunKoli} Koli)\n`;
         }
     }
 
-    message += `\nTotal Naik: ${totalNaikKg} Kg (${totalNaikKoli} Koli)\n`;
-    message += `Total Turun: ${totalTurunKg} Kg (${totalTurunKoli} Koli)\n`;
+    message += `\nTotal Naik: ${totalNaikkoli} Kg (${totalNaikKg} Koli)\n`;
+    message += `Total Turun: ${totalTurunkoli} Kg (${totalTurunKg} Koli)\n`;
 
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
